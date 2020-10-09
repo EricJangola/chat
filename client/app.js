@@ -13,13 +13,12 @@ const rl = readline.createInterface({
 var client = new net.Socket();
 client.connect(8000, '127.0.0.1', function() {
 	console.log('Connected');
-	//client.write('Hello, server! Love, Client.');
 });
 
 client.on('data', function(data) {
-    const {timestamp, message, id, trueNickname} = JSON.parse(data)
+    const {message, trueNickname} = JSON.parse(data)
     if(trueNickname) nickname = trueNickname
-    console.log(timestamp + ' - ' + message);
+    console.log(message);
 });
 
 client.on('close', function() {
@@ -28,4 +27,31 @@ client.on('close', function() {
 
 rl.on('line', (input) => {
     client.write(JSON.stringify({id, nickname, message: input }))
+    rl.write('', { ctrl: true, name: 'u' });
+    console.log(input)
   });
+  
+  var log = console.log;
+  console.log = function () {
+      var first_parameter = arguments[0];
+      var other_parameters = Array.prototype.slice.call(arguments, 1);
+  
+      function formatConsoleDate (date) {
+          var hour = date.getHours();
+          var minutes = date.getMinutes();
+          var seconds = date.getSeconds();
+          var milliseconds = date.getMilliseconds();
+  
+          return '[' +
+                 ((hour < 10) ? '0' + hour: hour) +
+                 ':' +
+                 ((minutes < 10) ? '0' + minutes: minutes) +
+                 ':' +
+                 ((seconds < 10) ? '0' + seconds: seconds) +
+                 '.' +
+                 ('00' + milliseconds).slice(-3) +
+                 '] ';
+      }
+  
+      log.apply(console, [formatConsoleDate(new Date()) + first_parameter].concat(other_parameters));
+  };

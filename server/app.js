@@ -3,17 +3,11 @@ let counter = 0;
 let sockets = {};
 let nickNames = [];
 
-function timestamp() {  
-  const now = new Date();
-  return `${now.getHours()}: ${now.getMinutes()}`;
-}
-
 server.on('connection', socket => {  
   socket.id = counter++;
 
   console.log('A client is connected');
   socket.write(JSON.stringify({
-      timestamp: timestamp(),
       message: 'Por favor selecione seu apelido: ',
       id: socket.id
     }
@@ -42,7 +36,7 @@ server.on('connection', socket => {
         //Broadcast de mensagem para cada socket
         Object.entries(sockets).forEach(([key, cs]) => {
             if(socket.id == key) return;
-            cs.write(writeMessage(timestamp(), `${socket.name}: ${message}`, socket.id));
+            cs.write(writeMessage(`${socket.name}: ${message}`, socket.id));
             //cs.write(message);
           });
     }   
@@ -56,7 +50,6 @@ server.on('connection', socket => {
 
 function writeMessage(id, message) {
     return JSON.stringify({
-        timestamp: timestamp(),
         message,
         id
       }
