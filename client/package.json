@@ -1,0 +1,23 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "chat client",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm run test",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EricJangola/chat.git"
+  },
+  "keywords": [
+    "chat"
+  ],
+  "author": "Eric JS",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EricJangola/chat/issues"
+  },
+  "homepage": "https://github.com/EricJangola/chat#readme"
+}
