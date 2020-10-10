@@ -4,7 +4,7 @@
   "description": "chat client",
   "main": "app.js",
   "scripts": {
-    "test": "npm run test",
+    "test": "mocha --reporter spec",
     "start": "node app.js"
   },
   "repository": {

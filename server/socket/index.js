@@ -70,6 +70,13 @@ init = () => {
       });
       
     server.listen(process.env.CHAT_PORT || 3000, () => console.log('Server bound'));
+    
+    //retornando caso o servidor suba sem erros
+    return true
+}
+
+closeServer = () => {
+  server.close()
 }
 
 writeMessage = (id, message) => {
@@ -97,4 +104,4 @@ removeNickname = (name) => {
   nickNames.splice(i)
 }
 
-module.exports = init
+module.exports = { init, server, removeNickname, validNickName, sendMessage, writeMessage, closeServer }

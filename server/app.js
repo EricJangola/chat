@@ -1,3 +1,2 @@
-const init = require("./socket")
-
+const { init } = require("./socket")
 init()

@@ -4,7 +4,7 @@
   "description": "chat server",
   "main": "app.js",
   "scripts": {
-    "test": "npm run test",
+    "test": "mocha --reporter spec",
     "start": "node app.js"
   },
   "repository": {
@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/EricJangola/chat/issues"
   },
-  "homepage": "https://github.com/EricJangola/chat#readme"
+  "homepage": "https://github.com/EricJangola/chat#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.1.3"
+  }
 }
