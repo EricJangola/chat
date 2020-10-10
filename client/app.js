@@ -25,6 +25,10 @@ client.on('close', function() {
 	console.log('Desconectado');
 });
 
+client.on('error', function() {
+    //TODO: tratar erros
+});
+
 rl.on('line', (input) => {
     
     // Verificando primeiro se ele está saindo do chat 
@@ -61,6 +65,16 @@ rl.on('line', (input) => {
       log.apply(console, [formatConsoleDate(new Date()) + first_parameter].concat(other_parameters));
   };
 
-  function killConnection() {
-      client.destroy()
-  }
+function killConnection() {
+    client.destroy()
+}
+
+//handling control + c ( desconectar cliente )
+rl.on("SIGINT", function () {
+    process.emit("SIGINT");
+  });
+  
+process.on("SIGINT", function () {
+    //graceful shutdown
+    killConnection()
+});
