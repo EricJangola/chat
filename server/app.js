@@ -15,9 +15,8 @@ server.on('connection', socket => {
 
   socket.on('data', data => {
         console.log(data)
-        const d = JSON.parse(data)
-        console.log("received:", d.message)
-        const message = d.message
+        const {message, private} = JSON.parse(data)
+        console.log("received:", message)
         
         if(!sockets[socket.id]) {
 
@@ -27,18 +26,31 @@ server.on('connection', socket => {
         if(isValid) {
             socket.name = message.toString().trim();
             nickNames.push(socket.name)
-            socket.write(writeMessage(socket.id, `Bem vindo ${socket.name}!\n`));
+            socket.write(writeMessage(socket.id, `Bem vindo ${socket.name}! ao #general\n`));
             sockets[socket.id] = socket;
+
+            //Enviando mensagem à todos usuarios do novo usuario
+            sendToAllExcept(socket.id, `${socket.name} se juntou ao #general\n`)
         } else {
             socket.write(writeMessage(socket.id, `Apelido em uso, selecione um novo apelido!\n`));
         }
     } else {
         //Broadcast de mensagem para cada socket
-        Object.entries(sockets).forEach(([key, cs]) => {
-            if(socket.id == key) return;
-            cs.write(writeMessage(`${socket.name}: ${message}`, socket.id));
-            //cs.write(message);
-          });
+        if(private) {
+            const sender = socket
+            Object.entries(sockets).forEach(([key, socket, cs]) => {
+              if(socket.name.toString() == private ) { 
+                socket.write(writeMessage(socket.id, `${sender.name}: ${message.split(' ').splice(2).join(' ')}`)); 
+                return
+              }
+            })
+         } else {
+            Object.entries(sockets).forEach(([key, cs]) => {
+                if(socket.id == key) return;
+                cs.write(writeMessage(socket.id, `${socket.name}: ${message}`));
+                //cs.write(message);
+              });
+         }
     }   
   });
 
@@ -54,6 +66,12 @@ function writeMessage(id, message) {
         id
       }
     )
+}
+
+function sendToAllExcept(socketId, message) {
+  Object.entries(sockets).forEach(([key, socket]) => {
+    if(socketId != key) socket.write(writeMessage(key, `${socket.name}: ${message}`));
+  });
 }
 
 function validNickName(message) {

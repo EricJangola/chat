@@ -26,9 +26,14 @@ client.on('close', function() {
 });
 
 rl.on('line', (input) => {
-    client.write(JSON.stringify({id, nickname, message: input }))
-    rl.write('', { ctrl: true, name: 'u' });
-    console.log(input)
+    
+    // Verificando primeiro se ele está saindo do chat 
+    if(input.startsWith('/exit')) killConnection()
+    else {
+        const private = input.startsWith('/p ') ?  input.replace('/p ', '').split(' ')[0]: null
+        client.write(JSON.stringify({id, nickname, message: input, private }))
+        console.log(input)
+    }
   });
   
   var log = console.log;
