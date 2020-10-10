@@ -11,7 +11,7 @@ const rl = readline.createInterface({
 });
 
 var client = new net.Socket();
-client.connect(8000, '127.0.0.1', function() {
+client.connect(process.env.CHAT_PORT || 3000, process.env.CHAT_URL || '127.0.0.1', function() {
 	console.log('Connected');
 });
 

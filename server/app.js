@@ -1,4 +1,5 @@
-const server = require('net').createServer();  
+const server = require('net').createServer();
+
 let counter = 0;  
 let sockets = {};
 let nickNames = [];
@@ -46,11 +47,6 @@ server.on('connection', socket => {
             })
          } else {
            sendToAllExcept(socket, message, false)
-            /*Object.entries(sockets).forEach(([key, cs]) => {
-                if(socket.id == key) return;
-                cs.write(writeMessage(socket.id, `${socket.name}: ${message}`));
-                //cs.write(message);
-              });*/
          }
     }   
   });
@@ -91,4 +87,4 @@ function removeNickname(name) {
   nickNames.splice(i)
 }
 
-server.listen(8000, () => console.log('Server bound'));  
+server.listen(process.env.CHAT_PORT || 3000, () => console.log('Server bound'));  
