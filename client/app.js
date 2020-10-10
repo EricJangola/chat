@@ -77,4 +77,5 @@ rl.on("SIGINT", function () {
 process.on("SIGINT", function () {
     //graceful shutdown
     killConnection()
+    process.exit();
 });
