@@ -22,7 +22,7 @@ client.on('data', function(data) {
 });
 
 client.on('close', function() {
-	console.log('Connection closed');
+	console.log('Desconectado');
 });
 
 rl.on('line', (input) => {
@@ -32,7 +32,7 @@ rl.on('line', (input) => {
     else {
         const private = input.startsWith('/p ') ?  input.replace('/p ', '').split(' ')[0]: null
         client.write(JSON.stringify({id, nickname, message: input, private }))
-        console.log(input)
+        console.log(`você:${input}`)
     }
   });
   
@@ -60,3 +60,7 @@ rl.on('line', (input) => {
   
       log.apply(console, [formatConsoleDate(new Date()) + first_parameter].concat(other_parameters));
   };
+
+  function killConnection() {
+      client.destroy()
+  }

@@ -30,7 +30,7 @@ server.on('connection', socket => {
             sockets[socket.id] = socket;
 
             //Enviando mensagem à todos usuarios do novo usuario
-            sendToAllExcept(socket.id, `${socket.name} se juntou ao #general\n`)
+            sendToAllExcept(socket, `${socket.name} se juntou ao #general\n`, true)
         } else {
             socket.write(writeMessage(socket.id, `Apelido em uso, selecione um novo apelido!\n`));
         }
@@ -40,23 +40,29 @@ server.on('connection', socket => {
             const sender = socket
             Object.entries(sockets).forEach(([key, socket, cs]) => {
               if(socket.name.toString() == private ) { 
-                socket.write(writeMessage(socket.id, `${sender.name}: ${message.split(' ').splice(2).join(' ')}`)); 
+                socket.write(writeMessage(socket.id, `${sender.name} em privado: ${message.split(' ').splice(2).join(' ')}`)); 
                 return
               }
             })
          } else {
-            Object.entries(sockets).forEach(([key, cs]) => {
+           sendToAllExcept(socket, message, false)
+            /*Object.entries(sockets).forEach(([key, cs]) => {
                 if(socket.id == key) return;
                 cs.write(writeMessage(socket.id, `${socket.name}: ${message}`));
                 //cs.write(message);
-              });
+              });*/
          }
     }   
   });
 
   socket.on('end', () => {
-    delete sockets[sockets.id];
-    console.log('Client disconnected');
+    delete sockets[socket.id];
+    removeNickname(socket.name);
+
+    //Mandando mensagem sobre à saida do usuario
+    sendToAllExcept(socket, `Usuario ${socket.name} saiu da sala.`, true)
+
+    console.log('Client disconnected')
   })
 });
 
@@ -68,14 +74,21 @@ function writeMessage(id, message) {
     )
 }
 
-function sendToAllExcept(socketId, message) {
+function sendToAllExcept(socketSender, message, serverMessage = false) {
   Object.entries(sockets).forEach(([key, socket]) => {
-    if(socketId != key) socket.write(writeMessage(key, `${socket.name}: ${message}`));
+    if(socketSender && socketSender.id != key) {
+      socket.write(writeMessage(socketSender.id, `${serverMessage? '' : socketSender.name}: ${message}`));
+    }
   });
 }
 
-function validNickName(message) {
-    return !nickNames.find(element => element == message)
+function validNickName(name) {
+    return !nickNames.find(element => element == name)
+}
+
+function removeNickname(name) {
+  const i = nickNames.findIndex(element => element == name)
+  nickNames.splice(i)
 }
 
 server.listen(8000, () => console.log('Server bound'));  
