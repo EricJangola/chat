@@ -10,15 +10,20 @@ describe("Client functions", function() {
     });
 
     context('init client', function() {
-        it('init client', function() {          
-          chai.expect(init()).to.be.equal(true)
+        it('init client', function() {      
+            init( res => {
+                chai.expect(res).to.be.equal(true)
+            })
         })
         it('write message', function() {          
-            chai.expect(sendMessage(0, null, 'take', false)).to.be.equal(true)
+            sendMessage(0, null, 'take', false, res => {
+                chai.expect(res).to.be.equal(true)
+            })
         })
         it('remove client', function() {          
-            const clientSocket = killConnection()
-            chai.expect(clientSocket.destroyed).to.be.equal(true)
+            killConnection(res => {
+                chai.expect(res.destroyed).to.be.equal(true)
+            })
           })
     })
 

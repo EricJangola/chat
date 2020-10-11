@@ -5,7 +5,7 @@ let counter = 0;
 let sockets = {};
 let nickNames = [];
 
-init = () => {
+init = (callback) => {
     server = net.createServer()
     server.on('connection', socket => {  
         socket.id = counter++;
@@ -76,44 +76,44 @@ init = () => {
     server.listen(process.env.CHAT_PORT || 3000, () => console.log('Server bound'));
     
     //retornando caso o servidor suba sem erros
-    return true
+    callback(true)
 }
 
-closeServer = () => {
-  server.close()
-  return true;
+closeServer = (callback) => {
+  callback(server.close())
 }
 
-sendHelpMessage = (socket) => {
-  return socket.write(writeMessage(socket.id, `Segue a lista de comandos existentes:
+sendHelpMessage = (socket, callback) => {
+  callback(socket.write(writeMessage(socket.id, `Segue a lista de comandos existentes:
 -mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
 -sair do chat: /exit
--ajuda: /help assim verá essa mensagem novamente`));
+-ajuda: /help assim verá essa mensagem novamente`)))
 }
 
-writeMessage = (id, message) => {
-    return JSON.stringify({
+writeMessage = (id, message, callback) => {
+    callback(JSON.stringify({
         message,
         id
       }
-    )
+    ))
 }
 
-sendMessage = (socketSender, message, serverMessage = false) => {
+sendMessage = (socketSender, message, serverMessage = false, callback) => {
   Object.entries(sockets).forEach(([key, socket]) => {
     if(socketSender && socketSender.id != key) {
       socket.write(writeMessage(socketSender.id, `${serverMessage? '' : socketSender.name}: ${message}`));
     }
   });
+  callback(true)
 }
 
-validNickName = (name) => {
-    return !nickNames.find(element => element == name)
+validNickName = (name, callback) => {
+    callback(!nickNames.find(element => element == name))
 }
 
-removeNickname = (name) => {
+removeNickname = (name, callback) => {
   const i = nickNames.findIndex(element => element == name)
-  nickNames.splice(i)
+  callback(nickNames.splice(i))
 }
 
 module.exports = { init, server, removeNickname, validNickName, sendMessage, writeMessage, closeServer }
