@@ -74,7 +74,7 @@ rl.on('line', (input) => {
   };
 
 killConnection = () => {
-    client.destroy()
+   return client.destroy()
 }
 
 //handling control + c ( desconectar cliente )
@@ -90,7 +90,7 @@ process.on("SIGINT", function () {
 
 
 sendMessage = (id, nickname, message, private ) => {
-    client.write(JSON.stringify({id, nickname, message, private }))
+    return client.write(JSON.stringify({id, nickname, message, private }))
 }
 
 module.exports = { init, sendMessage, killConnection }
