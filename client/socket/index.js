@@ -27,13 +27,15 @@ init = () => {
         //TODO: tratar erros
         console.log('Ocorreu um erro inesperado')
     });
+
+     //retornando caso o cliente suba sem erros
+     return true
 }
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
 
 rl.on('line', (input) => {
     
@@ -71,7 +73,7 @@ rl.on('line', (input) => {
       log.apply(console, [formatConsoleDate(new Date()) + first_parameter].concat(other_parameters));
   };
 
-function killConnection() {
+killConnection = () => {
     client.destroy()
 }
 
@@ -91,4 +93,4 @@ sendMessage = (id, nickname, message, private ) => {
     client.write(JSON.stringify({id, nickname, message, private }))
 }
 
-module.exports = init
+module.exports = { init, sendMessage, killConnection }

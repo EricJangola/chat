@@ -77,6 +77,7 @@ init = () => {
 
 closeServer = () => {
   server.close()
+  return true;
 }
 
 writeMessage = (id, message) => {
