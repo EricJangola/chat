@@ -21,11 +21,13 @@ init = () => {
     
     client.on('close', function() {
         console.log('Desconectado');
+        process.exit();
     });
     
     client.on('error', function() {
         //TODO: tratar erros
         console.log('Ocorreu um erro inesperado')
+        killConnection()
     });
 
      //retornando caso o cliente suba sem erros
@@ -43,9 +45,11 @@ rl.on('line', (input) => {
     if(input.startsWith('/exit')) killConnection()
     else {
         const private = input.startsWith('/p ') ?  input.replace('/p ', '').split(' ')[0]: null
-        sendMessage(id, nickname, input, private)
+        const help = input.startsWith('/help') ?  true: false
+        
+        sendMessage(id, nickname, input, private, help)
         if(input.startsWith('/p')) console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
-        else console.log(`você:${input}`)
+        else if (!input.startsWith('/help')) console.log(`você:${input}`)
     }
   });
   
@@ -99,8 +103,8 @@ process.on("SIGHUP", function () {
     process.exit();
 });
   
-sendMessage = (id, nickname, message, private ) => {
-    return client.write(JSON.stringify({id, nickname, message, private }))
+sendMessage = (id, nickname, message, private, help ) => {
+    return client.write(JSON.stringify({id, nickname, message, private, help }))
 }
 
 module.exports = { init, sendMessage, killConnection }

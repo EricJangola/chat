@@ -21,7 +21,7 @@ init = () => {
               console.log(data)
               
               //desconstruindo objeto de data
-              const {message, private} = JSON.parse(data)
+              const {message, private, help} = JSON.parse(data)
               
               console.log("received:", message)
               
@@ -33,7 +33,8 @@ init = () => {
               if(isValid) {
                   socket.name = message.toString().trim();
                   nickNames.push(socket.name)
-                  socket.write(writeMessage(socket.id, `Bem vindo ${socket.name}! ao #general\n`));
+                  socket.write(writeMessage(socket.id, `Bem vindo ${socket.name}! ao #general`))
+                  sendHelpMessage(socket);
                   sockets[socket.id] = socket;
       
                   //Enviando mensagem à todos usuarios do novo usuario
@@ -52,7 +53,10 @@ init = () => {
                       return
                     }
                   })
-               } else {
+               } else if (help) {
+                sendHelpMessage(socket)
+               }
+                else {
                   sendMessage(socket, message, false)
                }
           }   
@@ -78,6 +82,13 @@ init = () => {
 closeServer = () => {
   server.close()
   return true;
+}
+
+sendHelpMessage = (socket) => {
+  return socket.write(writeMessage(socket.id, `Segue a lista de comandos existentes:
+-mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
+-sair do chat: /exit
+-ajuda: /help assim verá essa mensagem novamente`));
 }
 
 writeMessage = (id, message) => {
