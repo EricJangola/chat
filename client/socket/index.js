@@ -44,7 +44,8 @@ rl.on('line', (input) => {
     else {
         const private = input.startsWith('/p ') ?  input.replace('/p ', '').split(' ')[0]: null
         sendMessage(id, nickname, input, private)
-        console.log(`você:${input}`)
+        if(input.startsWith('/p')) console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
+        else console.log(`você:${input}`)
     }
   });
   
@@ -88,7 +89,16 @@ process.on("SIGINT", function () {
     process.exit();
 });
 
-
+rl.on("SIGHUP", function () {
+    process.emit("SIGINT");
+  });
+  
+process.on("SIGHUP", function () {
+    //graceful shutdown
+    killConnection()
+    process.exit();
+});
+  
 sendMessage = (id, nickname, message, private ) => {
     return client.write(JSON.stringify({id, nickname, message, private }))
 }
