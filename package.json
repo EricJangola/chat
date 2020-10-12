@@ -1,0 +1,27 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "chat",
+  "main": "",
+  "scripts": {
+    "test-client": "cd client; mocha --reporter spec",
+    "test-server": "cd server; mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EricJangola/chat.git"
+  },
+  "keywords": [
+    "chat"
+  ],
+  "author": "Eric JS",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EricJangola/chat/issues"
+  },
+  "homepage": "https://github.com/EricJangola/chat#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.1.3"
+  }
+}
