@@ -23,12 +23,10 @@ init = (callback) => {
               console.log(data)
               
               //desconstruindo objeto de data
-              const {message, private, help, createRoom, room} = JSON.parse(data)
+              const {message, action} = JSON.parse(data)
               console.log("received:", message)
               
               if(!sockets[socket.id]) {
-      
-              
               //Validando apelido
               validNickName(message.toString().trim(), isValid => {
                   if(isValid) {
@@ -58,7 +56,7 @@ init = (callback) => {
           } else {
               //TODO: refactor com switch case e funções separadas para cada ação
               //Mensagem para unico cliente
-              if(private) {
+              if(action == 'private') {
                   const sender = socket
                   Object.entries(sockets).forEach(([key, socket, cs]) => {
                     if(socket.name.toString() == private && sender.room == socket.room) { 
@@ -67,32 +65,32 @@ init = (callback) => {
                       }); 
                     }
                   })
-               } else if (help) {
+               } else if (action == 'help') {
                   // Usuario pedindo comandos 
                   sendHelpMessage(socket, ()=>{})
-               } else if (createRoom) {
+               } else if (action == 'createRoom') {
                   // add sala
-                  addRoom(createRoom, (res, err) => {
+                  addRoom(message, (res, err) => {
                     if(err) {
                       writeMessage(socket.id, `Sala já existente'`, message => {
                         socket.write(message)
                       })
                     } else { 
                       // broadcast de mensagem criada com msg pro criador 
-                      sendMessage(socket, `Sala ${createRoom} criada com sucesso por ${socket.name}`, true, res => { }) 
-                      writeMessage(socket.id, `Sala ${createRoom} criada com sucesso`, (res) => {
+                      sendMessage(socket, `Sala ${message} criada com sucesso por ${socket.name}`, true, res => { }) 
+                      writeMessage(socket.id, `Sala ${message} criada com sucesso`, (res) => {
                         socket.write(res)
                       })
                     }
                   })
-                } else if (room) {
+                } else if (action == 'room') {
                   //usuario mudando de sala
-                  validRoom(room, res => {
-                    let mess = `Bem vindo à sala ${room}`
+                  validRoom(message, res => {
+                    let mess = `Bem vindo à sala ${message}`
                     if(res) {
-                      socket.room = room
+                      socket.room = message
                     } else {
-                      mess = `Sala ${room} inexistente`
+                      mess = `Sala ${message} inexistente`
                     }
                     writeMessage(socket.id, mess, (res) => {
                       socket.write(res)

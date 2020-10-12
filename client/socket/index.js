@@ -14,9 +14,13 @@ init = (callback) => {
     });
     
     client.on('data', data => {
-        const {message, trueNickname} = JSON.parse(data)
-        if(trueNickname) nickname = trueNickname
-        console.log(message);
+        try {
+            const {message, trueNickname} = JSON.parse(data)
+            if(trueNickname) nickname = trueNickname
+            console.log(message);
+        } catch(e) {
+            console.log('Ocorreu um erro ao receber os dados do servidor');
+        }
     });
     
     client.on('close', () => {
@@ -46,14 +50,13 @@ rl.on('line', (input) => {
     // Verificando primeiro se ele está saindo do chat 
     if(input.startsWith('/exit')) killConnection(()=>{})
     else {
-        const private = input.startsWith('/p ') ?  input.replace('/p ', '').split(' ')[0]: null
-        const help = input.startsWith('/help') ?  true: false
-        const createRoom = input.startsWith('/cr ') ?  input.replace('/cr ', '').split(' ')[0]: null
-        const room = input.startsWith('/r ') ?  input.replace('/r ', '').split(' ')[0]: null
-
-        sendMessage(id, nickname, input, private, createRoom, room, help, () => {
-            if(input.startsWith('/p')) {} //console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
-            else if (!input.startsWith('/help')) console.log(`você:${input}`)    
+        createAction(input, res => {
+            const {action, data} = res
+            sendMessage(id, nickname, data, action, () => {
+                if(action == 'private') {} //console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
+                else if (action != 'help') console.log(`você:${input}`)    
+            })
+            
         })
     }
   });
@@ -109,9 +112,29 @@ process.on("SIGHUP", function () {
         process.exit();
     })
 });
+
+createAction = (input, callback) => {
+    let action = 'message'
+    let data = input
+    
+    if(input.startsWith('/p ')) {
+        data = input.replace('/p ', '').split(' ')[0]
+        action = 'private'
+    } else if (input.startsWith('/help')) {
+        data = true
+        action = 'help'
+    } else if (input.startsWith('/cr ')) {
+        data = input.replace('/cr ', '').split(' ')[0]
+        action = 'createRoom'
+    } else if (input.startsWith('/r ')) {
+        data = input.replace('/r ', '').split(' ')[0]  
+        action = 'room'
+    }    
+    callback({action, data})
+}
   
-sendMessage = (id, nickname, message, private, createRoom, room, help, callback ) => {
-    callback(client.write(JSON.stringify({id, nickname, message, private, createRoom, room, help })))
+sendMessage = (id, nickname, message, action, callback ) => {
+    callback(client.write(JSON.stringify({id, nickname, message, action })))
 }
 
 module.exports = { init, sendMessage, killConnection }
