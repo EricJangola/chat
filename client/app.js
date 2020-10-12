@@ -1,2 +1,4 @@
 const { init } = require("./socket")
-init()
+init( res => {
+    console.log('Cliente on')
+})
