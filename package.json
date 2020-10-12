@@ -4,6 +4,7 @@
   "description": "chat",
   "main": "",
   "scripts": {
+    "test": "cd client; mocha --reporter spec; cd ../server;  mocha --reporter spec",
     "test-client": "cd client; mocha --reporter spec",
     "test-server": "cd server; mocha --reporter spec"
   },
