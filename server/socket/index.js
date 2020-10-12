@@ -61,7 +61,7 @@ init = (callback) => {
               if(private) {
                   const sender = socket
                   Object.entries(sockets).forEach(([key, socket, cs]) => {
-                    if(socket.name.toString() == private ) { 
+                    if(socket.name.toString() == private && sender.room == socket.room) { 
                       writeMessage(socket.id, `${sender.name} em privado: ${message.split(' ').splice(2).join(' ')}`, res => {
                         socket.write(res)
                       }); 
@@ -130,6 +130,8 @@ sendHelpMessage = (socket, callback) => {
     writeMessage(socket.id, `Segue a lista de comandos existentes:
   -mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
   -sair do chat: /exit
+  - criar sala: /cr nomeSala Ex: /cr troopers
+  - mudar de sala: /r nomeSala Ex: /r troopers
   -ajuda: /help assim verá essa mensagem novamente`, message => {
     callback(socket.write(message))
   })
@@ -145,7 +147,7 @@ writeMessage = (id, message, callback) => {
 
 sendMessage = (socketSender, message, serverMessage = false, callback) => {
   Object.entries(sockets).forEach(([key, socket]) => {
-    if(socketSender && socketSender.id != key) {
+    if(socketSender && socketSender.id != key && socketSender.room == socket.room) {
       writeMessage(socketSender.id, `${serverMessage? '' : socketSender.name}: ${message}`, res =>{
         socket.write(res)
       });
