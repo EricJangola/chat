@@ -27,7 +27,9 @@ init = (callback) => {
     client.on('error', () => {
         //TODO: tratar erros
         console.log('Ocorreu um erro inesperado')
-        killConnection()
+        killConnection( res => {
+            console.log('Encerrando a conexão')
+        })
     });
 
      //retornando caso o cliente suba sem erros
@@ -46,9 +48,10 @@ rl.on('line', (input) => {
     else {
         const private = input.startsWith('/p ') ?  input.replace('/p ', '').split(' ')[0]: null
         const help = input.startsWith('/help') ?  true: false
-        
-        sendMessage(id, nickname, input, private, help, () => {
-            if(input.startsWith('/p')) console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
+        const room = input.startsWith('/cr ') ?  input.replace('/cr ', '').split(' ')[0]: null
+
+        sendMessage(id, nickname, input, private, room, help, () => {
+            if(input.startsWith('/p')) {} //console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
             else if (!input.startsWith('/help')) console.log(`você:${input}`)    
         })
     }
@@ -90,8 +93,9 @@ rl.on("SIGINT", function () {
   
 process.on("SIGINT", function () {
     //graceful shutdown
-    killConnection()
-    process.exit();
+    killConnection( (res) => {
+        process.exit();
+    })
 });
 
 rl.on("SIGHUP", function () {
@@ -105,8 +109,8 @@ process.on("SIGHUP", function () {
     })
 });
   
-sendMessage = (id, nickname, message, private, help, callback ) => {
-    callback(client.write(JSON.stringify({id, nickname, message, private, help })))
+sendMessage = (id, nickname, message, private, room, help, callback ) => {
+    callback(client.write(JSON.stringify({id, nickname, message, private, room, help })))
 }
 
 module.exports = { init, sendMessage, killConnection }

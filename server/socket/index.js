@@ -4,6 +4,7 @@ let server
 let counter = 0;  
 let sockets = {};
 let nickNames = [];
+let rooms = ['general']
 
 init = (callback) => {
     server = net.createServer()
@@ -21,55 +22,78 @@ init = (callback) => {
               console.log(data)
               
               //desconstruindo objeto de data
-              const {message, private, help} = JSON.parse(data)
-              
+              const {message, private, help, room} = JSON.parse(data)
               console.log("received:", message)
               
               if(!sockets[socket.id]) {
       
               //Validando apelido
-              const isValid = validNickName(message.toString().trim())
-              
-              if(isValid) {
-                  socket.name = message.toString().trim();
-                  nickNames.push(socket.name)
-                  socket.write(writeMessage(socket.id, `Bem vindo ${socket.name}! ao #general`))
-                  sendHelpMessage(socket);
-                  sockets[socket.id] = socket;
-      
-                  //Enviando mensagem à todos usuarios do novo usuario
-                  sendMessage(socket, `${socket.name} se juntou ao #general\n`, true)
-              } else {
-                  socket.write(writeMessage(socket.id, `Apelido em uso, selecione um novo apelido!\n`));
-              }
+              validNickName(message.toString().trim(), isValid => {
+                  if(isValid) {
+                    socket.name = message.toString().trim();
+                    nickNames.push(socket.name)
+                    writeMessage(socket.id, `Bem vindo ${socket.name}! ao #general`, message => {
+                      sockets[socket.id] = socket;
+                      socket.write(message)
+
+                      //Enviando mensagem com comandos para o novo usuario
+                      sendHelpMessage(socket, () => {
+
+                        //Enviando mensagem à todos usuarios do novo usuario
+                        sendMessage(socket, `${socket.name} se juntou ao #general\n`, true, () =>{})  
+                      });
+                    })
+                } else {
+                    //Se o apelido não for válido, enviar mensagem requerindo um novo
+                    writeMessage(socket.id, `Apelido em uso, selecione um novo apelido!\n`, message => {
+                      socket.write(socket.id, message)
+                    });
+                }
+              })
           } else {
-              //Broadcast de mensagem para unico cliente
+              //Mensagem para unico cliente
               if(private) {
                   const sender = socket
-                  
                   Object.entries(sockets).forEach(([key, socket, cs]) => {
                     if(socket.name.toString() == private ) { 
-                      socket.write(writeMessage(socket.id, `${sender.name} em privado: ${message.split(' ').splice(2).join(' ')}`)); 
-                      return
+                      writeMessage(socket.id, `${sender.name} em privado: ${message.split(' ').splice(2).join(' ')}`, res => {
+                        socket.write(res)
+                      }); 
                     }
                   })
                } else if (help) {
-                sendHelpMessage(socket)
-               }
-                else {
-                  sendMessage(socket, message, false)
+                  // Usuario pedindo comandos 
+                  sendHelpMessage(socket, ()=>{})
+               } else if (room) {
+                  // add sala
+                  addRoom(room, (res, err) => {
+                    if(err) {
+                      writeMessage(socket.id, `Sala já existente'`, message => {
+                        socket.write(message)
+                      })
+                    } else { 
+                      // broadcast de mensagem criada com msg pro criador 
+                      sendMessage(socket, `Sala ${room} criada com sucesso por ${socket.name}`, true, res => { }) 
+                      writeMessage(socket.id, `Sala ${room} criada com sucesso`, (res) => {
+                        socket.write(res)
+                      })
+                    }
+                  })
+                } else {
+                  //Mensagem para todos
+                  sendMessage(socket, message, false, () => {})
                }
           }   
         });
       
         socket.on('end', () => {
           delete sockets[socket.id];
-          removeNickname(socket.name);
-      
-          //Mandando mensagem sobre à saida do usuario
-          sendMessage(socket, `Usuario ${socket.name} saiu da sala.`, true)
-      
-          console.log('Client disconnected')
+          removeNickname(socket.name, res => {
+            //Mandando mensagem sobre à saida do usuario
+            sendMessage(socket, `Usuario ${socket.name} saiu da sala.`, true, ()=>{
+              console.log('Client disconnected')
+            })
+          });         
         })
       });
       
@@ -84,10 +108,12 @@ closeServer = (callback) => {
 }
 
 sendHelpMessage = (socket, callback) => {
-  callback(socket.write(writeMessage(socket.id, `Segue a lista de comandos existentes:
--mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
--sair do chat: /exit
--ajuda: /help assim verá essa mensagem novamente`)))
+    writeMessage(socket.id, `Segue a lista de comandos existentes:
+  -mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
+  -sair do chat: /exit
+  -ajuda: /help assim verá essa mensagem novamente`, message => {
+    callback(socket.write(message))
+  })
 }
 
 writeMessage = (id, message, callback) => {
@@ -101,7 +127,9 @@ writeMessage = (id, message, callback) => {
 sendMessage = (socketSender, message, serverMessage = false, callback) => {
   Object.entries(sockets).forEach(([key, socket]) => {
     if(socketSender && socketSender.id != key) {
-      socket.write(writeMessage(socketSender.id, `${serverMessage? '' : socketSender.name}: ${message}`));
+      writeMessage(socketSender.id, `${serverMessage? '' : socketSender.name}: ${message}`, res =>{
+        socket.write(res)
+      });
     }
   });
   callback(true)
@@ -116,4 +144,15 @@ removeNickname = (name, callback) => {
   callback(nickNames.splice(i))
 }
 
-module.exports = { init, server, removeNickname, validNickName, sendMessage, writeMessage, closeServer }
+addRoom = (room, callback) => {
+  const exists = rooms.find(element => element == room)
+  if(exists) callback(null, exists)
+  else callback(rooms.push(room))
+}
+
+removeRoom = (room, callback) => {
+  const i = rooms.findIndex(element => element == room)
+  callback(rooms.splice(i))
+}
+
+module.exports = { init, server, removeNickname, validNickName, sendMessage, writeMessage, closeServer, addRoom, removeRoom }

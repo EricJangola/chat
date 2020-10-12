@@ -6,7 +6,8 @@ server = require("../../server/socket")
 describe("Client functions", function() {
     before(function () {
         //subindo o servidor para teste
-        server.init()
+        server.init(res => {  
+        })
     });
 
     context('init client', function() {
