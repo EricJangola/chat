@@ -44,13 +44,14 @@ const rl = readline.createInterface({
 rl.on('line', (input) => {
     
     // Verificando primeiro se ele está saindo do chat 
-    if(input.startsWith('/exit')) killConnection()
+    if(input.startsWith('/exit')) killConnection(()=>{})
     else {
         const private = input.startsWith('/p ') ?  input.replace('/p ', '').split(' ')[0]: null
         const help = input.startsWith('/help') ?  true: false
-        const room = input.startsWith('/cr ') ?  input.replace('/cr ', '').split(' ')[0]: null
+        const createRoom = input.startsWith('/cr ') ?  input.replace('/cr ', '').split(' ')[0]: null
+        const room = input.startsWith('/r ') ?  input.replace('/r ', '').split(' ')[0]: null
 
-        sendMessage(id, nickname, input, private, room, help, () => {
+        sendMessage(id, nickname, input, private, createRoom, room, help, () => {
             if(input.startsWith('/p')) {} //console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
             else if (!input.startsWith('/help')) console.log(`você:${input}`)    
         })
@@ -109,8 +110,8 @@ process.on("SIGHUP", function () {
     })
 });
   
-sendMessage = (id, nickname, message, private, room, help, callback ) => {
-    callback(client.write(JSON.stringify({id, nickname, message, private, room, help })))
+sendMessage = (id, nickname, message, private, createRoom, room, help, callback ) => {
+    callback(client.write(JSON.stringify({id, nickname, message, private, createRoom, room, help })))
 }
 
 module.exports = { init, sendMessage, killConnection }
