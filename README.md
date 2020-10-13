@@ -1,4 +1,4 @@
-# Coolest chat to Take.NET
+# Take Coolest Chat
 
 
 Uma aplicação simples de chat feita em NodeJs nativo, sem uso de bibliotecas externas. A solução é composta de dois projetos distintos ( aplicação cliente/servidor), desse modo é possível executar em máquinas distintas ambos, tendo conhecimento previamente do IP da aplicação servidora e a porta em que a mesma roda.
