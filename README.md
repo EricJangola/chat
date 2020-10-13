@@ -45,6 +45,16 @@ Features
 - Mensagem privada para membros da sala
 - Sair do chat
 
+
+Melhorias
+-------
+
+Revisão do código do servidor e implementação de melhores tratamentos de erros e crashes. Criação e componentização do mesmo via docker, estudar e implementar uma estrategia com várias instancias que compartilham as conexões entre si, utilizando um nginx para realizar o proxy reverso.
+
+Melhorar casos de testes, cobrindo as funcionalidades extras, adicionando edge cases e forçando "crashes" inesperados da aplicação. Criação de interface web com login e seleção de apelido. O cliente pode se tornar tão escalável quando o servidor ( mesma arquitetura ).
+
+
+
 License
 -------
 
