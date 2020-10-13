@@ -9,8 +9,9 @@ Após a escolha de apelido válido a sua conexão é salva pelo servidor, array 
 Exemplos
 --------
 
- -mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
- -sair do chat: /exit
+ 
+ - mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
+ - sair do chat: /exit
  - criar sala: /cr nomeSala Ex: /cr troopers
  - mudar de sala: /r nomeSala Ex: /r troopers
  -ajuda: /help assim verá essa mensagem novamente
