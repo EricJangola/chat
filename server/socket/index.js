@@ -1,4 +1,3 @@
-const { Socket } = require('dgram');
 const net = require('net');
 
 let server

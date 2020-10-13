@@ -1,10 +1,8 @@
 let net = require('net');
-const crypto = require("crypto");
 const readline = require("readline");
 
 let nickname = ''
 let client
-const id = crypto.randomBytes(16).toString("hex");
 
 init = (callback) => {
     client = new net.Socket();
