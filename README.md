@@ -1,5 +1,9 @@
 # Take Coolest Chat
 
+Node version
+--------
+- v11.6.0
+
 
 Uma aplicação simples de chat feita em NodeJs nativo, sem uso de bibliotecas externas. A solução é composta de dois projetos distintos ( aplicação cliente/servidor), desse modo é possível executar em máquinas distintas ambos, tendo conhecimento previamente do IP da aplicação servidora e a porta em que a mesma roda. Para isso foi utilizado as variáveis de ambiente da maquina ( process.env ) para reconhecer as portas, url's e demais arquivos. Tambem é possível usar a biblioteca dotenv para gerar um arquivo .env de configuração das aplicações.
 
@@ -14,7 +18,6 @@ Após a escolha de apelido válido a sua conexão é salva pelo servidor, array 
 
 Exemplos
 --------
-
  
  - mensagem privada: /p nomeUsuario mensagem. Ex: /p take ola, como está?
  - sair do chat: /exit
