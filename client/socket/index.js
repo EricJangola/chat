@@ -50,7 +50,7 @@ rl.on('line', (input) => {
     else {
         createAction(input, res => {
             const {action, data} = res
-            sendMessage(id, nickname, data, action, () => {
+            sendMessage(nickname, data, action, () => {
                 if(action == 'private') {} //console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
                 else if (action != 'help') console.log(`você:${input}`)    
             })
@@ -131,7 +131,7 @@ createAction = (input, callback) => {
     callback({action, data})
 }
   
-sendMessage = (id, nickname, message, action, callback ) => {
+sendMessage = (nickname, message, action, callback ) => {
     callback(client.write(JSON.stringify({id, nickname, message, action })))
 }
 
