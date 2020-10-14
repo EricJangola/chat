@@ -48,7 +48,7 @@ init = (callback) => {
                 } else {
                     //Se o apelido não for válido, enviar mensagem requerindo um novo
                     writeMessage(socket.id, `Apelido em uso, selecione um novo apelido!\n`, message => {
-                      socket.write(socket.id, message)
+                      socket.write(message)
                     });
                 }
               })
@@ -131,6 +131,7 @@ sendHelpMessage = (socket, callback) => {
   - criar sala: /cr nomeSala Ex: /cr troopers
   - mudar de sala: /r nomeSala Ex: /r troopers
   -ajuda: /help assim verá essa mensagem novamente`, message => {
+    console.log(message)
     callback(socket.write(message))
   })
 }
