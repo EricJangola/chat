@@ -17,6 +17,7 @@ init = (callback) => {
             if(trueNickname) nickname = trueNickname
             console.log(message);
         } catch(e) {
+            //console.log(data)
             console.log('Ocorreu um erro ao receber os dados do servidor');
         }
     });
@@ -116,7 +117,7 @@ createAction = (input, callback) => {
     let data = input
     
     if(input.startsWith('/p ')) {
-        data = input.replace('/p ', '').split(' ')[0]
+        data = input.replace('/p ', '')
         action = 'private'
     } else if (input.startsWith('/help')) {
         data = true
@@ -132,7 +133,7 @@ createAction = (input, callback) => {
 }
   
 sendMessage = (nickname, message, action, callback ) => {
-    callback(client.write(JSON.stringify({id, nickname, message, action })))
+    callback(client.write(JSON.stringify({nickname, message, action })))
 }
 
 module.exports = { init, sendMessage, killConnection }

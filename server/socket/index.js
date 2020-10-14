@@ -57,9 +57,10 @@ init = (callback) => {
               //Mensagem para unico cliente
               if(action == 'private') {
                   const sender = socket
+                  console.log('privada' + message)
                   Object.entries(sockets).forEach(([key, socket, cs]) => {
-                    if(socket.name.toString() == private && sender.room == socket.room) { 
-                      writeMessage(socket.id, `${sender.name} em privado: ${message.split(' ').splice(2).join(' ')}`, res => {
+                    if(socket.name.toString() == message.split(' ')[0] && sender.room == socket.room) { 
+                      writeMessage(socket.id, `${sender.name} em privado: ${message.split(' ').splice(1).join(' ')}`, res => {
                         socket.write(res)
                       }); 
                     }
