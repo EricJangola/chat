@@ -17,8 +17,17 @@ init = (callback) => {
             if(trueNickname) nickname = trueNickname
             console.log(message);
         } catch(e) {
-            //console.log(data)
             console.log('Ocorreu um erro ao receber os dados do servidor');
+
+            //caso ocorra algum erro inesperado, pedir ajuda do servidor
+            createAction('/help', res => {
+                const {action, data} = res
+                sendMessage(nickname, data, action, () => {
+                    if(action == 'private') {} //console.log(`em privado para ${input.split(' ')[1]}: ` + input.split(' ').splice(2).join(' '))
+                    else if (action != 'help') console.log(`você:${input}`)    
+                })
+            })
+            
         }
     });
     
@@ -60,6 +69,7 @@ rl.on('line', (input) => {
     }
   });
   
+  //overridee console.log para mostrar as log de horas
   let log = console.log;
   console.log = function () {
       let first_parameter = arguments[0];
@@ -85,6 +95,7 @@ rl.on('line', (input) => {
       log.apply(console, [formatConsoleDate(new Date()) + first_parameter].concat(other_parameters));
   };
 
+// Mata a conexao com o serviddor
 killConnection = (callback) => {
     callback(client.destroy())
 }
@@ -112,6 +123,7 @@ process.on("SIGHUP", function () {
     })
 });
 
+//Baseado no texto digitado, define qual ação será feita
 createAction = (input, callback) => {
     let action = 'message'
     let data = input
